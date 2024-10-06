@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
 class HomeScreen extends StatelessWidget {
   final String jsonString = '''{
         "data": {
-           "subStage": "Disbusement Form",
+           "subStage": "Document Verification",
            "stage": "Disbusement",
            "product": "Two Wheeler"
         },
@@ -221,17 +221,19 @@ class TimelineStepper extends StatelessWidget {
         final List<StepperItem> subSteps = entry.value;
         bool isComplete = true;
 
+        // Check if each stage and its sub-stage is complete
         for (var step in subSteps) {
           if (step.stageLevel < currentStatus.stageLevel) {
-            isComplete = true;
+            isComplete = true; // Mark as completed if earlier stage
           } else if (step.stageLevel == currentStatus.stageLevel) {
             if (step.systemSubStage == currentStatus.subStage) {
-              isComplete = true;
+              isComplete =
+                  true; // Mark as complete if current stage and sub-stage match
             } else {
-              isComplete = false;
+              isComplete = false; // Otherwise mark as not complete
             }
           } else {
-            isComplete = false;
+            isComplete = false; // Future stages are not complete
           }
         }
 
@@ -242,10 +244,12 @@ class TimelineStepper extends StatelessWidget {
               padding: const EdgeInsets.only(left: 20.0),
               child: Row(
                 children: [
-                  // Adjust padding of Checkbox
                   Transform.translate(
-                    offset: const Offset(0, 0), // Align checkbox with the line
+                    offset: const Offset(0, 0),
                     child: Checkbox(
+                      fillColor: isComplete
+                          ? const WidgetStatePropertyAll(Colors.blue)
+                          : const WidgetStatePropertyAll(Colors.white),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -253,15 +257,17 @@ class TimelineStepper extends StatelessWidget {
                       onChanged: null,
                     ),
                   ),
-                  Text(
-                    planetStage,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20.0),
+                    child: Text(
+                      planetStage,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
                   ),
                 ],
               ),
             ),
-            //const SizedBox(height: 12),
             Padding(
               padding: const EdgeInsets.only(left: 30.0),
               child: Column(
@@ -273,6 +279,7 @@ class TimelineStepper extends StatelessWidget {
                   bool isCompletedStage =
                       step.stageLevel < currentStatus.stageLevel;
 
+                  // Pass 'isComplete' to all the completed lines in the painter
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -280,21 +287,24 @@ class TimelineStepper extends StatelessWidget {
                         alignment: Alignment.centerLeft,
                         children: [
                           CustomPaint(
-                            size: const Size(
-                                8, 40), // Increased size to match Checkbox
+                            size: const Size(8, 40),
                             painter: TimelinePainter(
                               isActive: isActive,
-                              isComplete: isCompletedStage,
+                              isComplete: isCompletedStage ||
+                                  step.stageLevel == currentStatus.stageLevel &&
+                                      step.subStageLevel <=
+                                          currentStatus
+                                              .stageLevel, // All previous lines blue
                               isLastItem: isLastItem,
                               isFirstItem: step == subSteps.first,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 4),
                       if (step.planetSub.isNotEmpty)
                         Padding(
-                          padding: const EdgeInsets.only(left: 10, top: 10),
+                          padding: const EdgeInsets.only(left: 30, top: 10),
                           child: Text(
                             step.planetSub,
                             style: const TextStyle(color: Colors.grey),
@@ -329,32 +339,86 @@ class TimelinePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     Paint linePaint = Paint()
       ..strokeWidth = 2.0
-      ..color = isComplete ? Colors.green : Colors.grey
+      ..color = isComplete || isActive ? Colors.blue : Colors.grey
       ..style = PaintingStyle.stroke;
 
     double startY = 0; // Always start from the top of the widget
     double endY = size.height;
 
-    // Draw line from top to bottom, regardless of first/last item
-    canvas.drawLine(
-      Offset(size.width / 2, startY),
-      Offset(size.width / 2, endY),
-      linePaint,
-    );
+    if (!isComplete && !isActive) {
+      // Draw dotted line for incomplete steps
+      _drawDottedLine(canvas, size, linePaint, startY, endY);
+    } else {
+      // Draw solid line for completed steps
+      canvas.drawLine(
+        Offset(size.width / 2, startY),
+        Offset(size.width / 2, endY),
+        linePaint,
+      );
+    }
 
-    // Draw the icon for completed and active sub-stages
-    Paint dotPaint = Paint()
-      ..color = isComplete || isActive ? Colors.blue : Colors.grey
+    // Draw the dot for completed and active sub-stages with white fill and grey outline
+    if (isComplete || isActive) {
+      _drawSolidCircle(canvas, size);
+    } else {
+      _drawOutlinedCircle(canvas, size);
+    }
+  }
+
+  void _drawDottedLine(
+      Canvas canvas, Size size, Paint paint, double startY, double endY) {
+    const double dashHeight = 4; // Height of a dash
+    const double dashSpacing = 4; // Space between dashes
+
+    double y = startY;
+    while (y < endY) {
+      // Draw individual dash
+      canvas.drawLine(
+        Offset(size.width / 2, y),
+        Offset(size.width / 2, y + dashHeight),
+        paint,
+      );
+      y += dashHeight + dashSpacing; // Move to the next dash position
+    }
+  }
+
+  void _drawSolidCircle(Canvas canvas, Size size) {
+    Paint solidCirclePaint = Paint()
+      ..color = Colors.blue // Blue filled for completed or active steps
       ..style = PaintingStyle.fill;
 
-    // Set the size for the small icon
-    double iconSize = 3.0; // Increased the icon size
-
-    // Draw dot at the center of the widget
+    double iconSize = 4.0; // Set the size for the dot
     canvas.drawCircle(
       Offset(size.width / 2, size.height / 2),
       iconSize,
-      dotPaint,
+      solidCirclePaint,
+    );
+  }
+
+  void _drawOutlinedCircle(Canvas canvas, Size size) {
+    Paint fillPaint = Paint()
+      ..color = Colors.white // White fill color
+      ..style = PaintingStyle.fill;
+
+    Paint outlinePaint = Paint()
+      ..color = Colors.grey // Grey outline for incomplete steps
+      ..strokeWidth = 2.0
+      ..style = PaintingStyle.stroke;
+
+    double iconSize = 4.0; // Set the size for the dot
+
+    // Draw white-filled circle first
+    canvas.drawCircle(
+      Offset(size.width / 2, size.height / 2),
+      iconSize,
+      fillPaint,
+    );
+
+    // Then draw the grey outline
+    canvas.drawCircle(
+      Offset(size.width / 2, size.height / 2),
+      iconSize,
+      outlinePaint,
     );
   }
 
