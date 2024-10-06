@@ -1,0 +1,269 @@
+{
+    "success": "00",
+    "data": {
+      "applicationDetails": [
+        {
+          "subStage": "Offer details",
+          "stage": "Qualification",
+          "sourcingChannel": "CLPRP",
+          "product": "Two Wheeler",
+          "mobile": "xxxxxxxx"
+        }
+      ],
+      "applicationContent": [
+        {
+          "lob": "TW_ASSISTED",
+          "subStages": [
+            {
+              "SysStage": "Login",
+              "SystemSubStage": "Login",
+              "PlanetStage": "Application Initiation",
+              "PlanetSub": "",
+              "stageLevel": "1",
+              "subStageLevel": "0"
+            },
+            {
+              "SysStage": "Login",
+              "SystemSubStage": "Expired",
+              "PlanetStage": "Application Initiation",
+              "PlanetSub": "",
+              "stageLevel": "1",
+              "subStageLevel": "0"
+            },
+            {
+              "SysStage": "Login",
+              "SystemSubStage": "REJECTED",
+              "PlanetStage": "Application Initiation",
+              "PlanetSub": "",
+              "stageLevel": "1",
+              "subStageLevel": "0"
+            },
+            {
+              "SysStage": "Qualification",
+              "SystemSubStage": "Bureaur Check",
+              "PlanetStage": "Credit / KYC Authentication",
+              "PlanetSub": "",
+              "stageLevel": "2",
+              "subStageLevel": "0"
+            },
+            {
+              "SysStage": "Qualification",
+              "SystemSubStage": "Fuzzy Login",
+              "PlanetStage": "Credit / KYC Authentication",
+              "PlanetSub": "",
+              "stageLevel": "2",
+              "subStageLevel": "0"
+            },
+            {
+              "SysStage": "Qualification",
+              "SystemSubStage": "Dedugpe",
+              "PlanetStage": "Credit / KYC Authentication",
+              "PlanetSub": "",
+              "stageLevel": "2",
+              "subStageLevel": "0"
+            },
+            {
+              "SysStage": "Qualification",
+              "SystemSubStage": "Run 1st BRE Call",
+              "PlanetStage": "Credit / KYC Authentication",
+              "PlanetSub": "",
+              "stageLevel": "2",
+              "subStageLevel": "0"
+            },
+            {
+              "SysStage": "Qualification",
+              "SystemSubStage": "KYC docs upload",
+              "PlanetStage": "Credit / KYC Authentication",
+              "PlanetSub": "",
+              "stageLevel": "2",
+              "subStageLevel": "1"
+            },
+            {
+              "SysStage": "Qualification",
+              "SystemSubStage": "Income Details",
+              "PlanetStage": "Credit / KYC Authentication",
+              "PlanetSub": "Awaiting for Income Assessment",
+              "stageLevel": "2",
+              "subStageLevel": "2"
+            },
+            {
+              "SysStage": "Qualification",
+              "SystemSubStage": "Awaiting for Income Assessment",
+              "PlanetStage": "Credit / KYC Authentication",
+              "PlanetSub": "",
+              "stageLevel": "2",
+              "subStageLevel": "0"
+            },
+            {
+              "SysStage": "Qualification",
+              "SystemSubStage": "Asset Details",
+              "PlanetStage": "Credit / KYC Authentication",
+              "PlanetSub": "Please select your asset",
+              "stageLevel": "2",
+              "subStageLevel": "3"
+            },
+            {
+              "SysStage": "Qualification",
+              "SystemSubStage": "Awaiting for Sanction",
+              "PlanetStage": "Credit / KYC Authentication",
+              "PlanetSub": "",
+              "stageLevel": "2",
+              "subStageLevel": "0"
+            },
+            {
+              "SysStage": "Qualification",
+              "SystemSubStage": "Awaiting for ASM Approval",
+              "PlanetStage": "Credit / KYC Authentication",
+              "PlanetSub": "",
+              "stageLevel": "2",
+              "subStageLevel": "0"
+            },
+            {
+              "SysStage": "Qualification",
+              "SystemSubStage": "Offer details",
+              "PlanetStage": "Credit / KYC Authentication",
+              "PlanetSub": "Select your offer tenure and ammount",
+              "stageLevel": "2",
+              "subStageLevel": "4"
+            },
+            {
+              "SysStage": "Qualification",
+              "SystemSubStage": "Awaiting for Custome Photo",
+              "PlanetStage": "Loan Sanction Approval",
+              "PlanetSub": "",
+              "stageLevel": "3",
+              "subStageLevel": "0"
+            },
+            {
+              "SysStage": "Sanction",
+              "SystemSubStage": "Awaiting For RCU Check",
+              "PlanetStage": "Loan Sanction Approval",
+              "PlanetSub": "",
+              "stageLevel": "3",
+              "subStageLevel": "0"
+            },
+            {
+              "SysStage": "Qualification",
+              "SystemSubStage": "EXPRIED",
+              "PlanetStage": "Credit / KYC Authentication",
+              "PlanetSub": "",
+              "stageLevel": "2",
+              "subStageLevel": "0"
+            },
+            {
+              "SysStage": "Qualification",
+              "SystemSubStage": "REJECTED",
+              "PlanetStage": "Credit / KYC Authentication",
+              "PlanetSub": "",
+              "stageLevel": "2",
+              "subStageLevel": "0"
+            },
+            {
+              "SysStage": "Sanction",
+              "SystemSubStage": "Loan Sanction With Eligibility",
+              "PlanetStage": "Loan Sanction Approval",
+              "PlanetSub": "Loan Sanctioned",
+              "stageLevel": "3",
+              "subStageLevel": "1"
+            },
+            {
+              "SysStage": "Sanction",
+              "SystemSubStage": "EXPIRED",
+              "PlanetStage": "Loan Sanction Approval",
+              "PlanetSub": "Loan Sanctioned",
+              "stageLevel": "3",
+              "subStageLevel": "0"
+            },
+            {
+              "SysStage": "Sanction",
+              "SystemSubStage": "REJECTED",
+              "PlanetStage": "Loan Sanction Approval",
+              "PlanetSub": "Loan Sanctioned",
+              "stageLevel": "3",
+              "subStageLevel": "0"
+            },
+            {
+              "SysStage": "Disbusement",
+              "SystemSubStage": "Disbusement Form",
+              "PlanetStage": "Disbusement Formalities",
+              "PlanetSub": "Awaiting Bank & Other Details",
+              "stageLevel": "4",
+              "subStageLevel": "1"
+            },
+            {
+              "SysStage": "Disbusement",
+              "SystemSubStage": "Docs Upload",
+              "PlanetStage": "Disbusement Formalities",
+              "PlanetSub": "",
+              "stageLevel": "4",
+              "subStageLevel": "0"
+            },
+            {
+              "SysStage": "Disbusement",
+              "SystemSubStage": "Mandate Setup",
+              "PlanetStage": "Disbusement Formalities",
+              "PlanetSub": "Mandate Setup",
+              "stageLevel": "4",
+              "subStageLevel": "2"
+            },
+            {
+              "SysStage": "Disbusement",
+              "SystemSubStage": "E-DOC",
+              "PlanetStage": "Disbusement Formalities",
+              "PlanetSub": "Loan Agrement Excecution",
+              "stageLevel": "4",
+              "subStageLevel": "3"
+            },
+            {
+              "SysStage": "Disbusement",
+              "SystemSubStage": "Pending Docs Upload",
+              "PlanetStage": "Disbusement Formalities",
+              "PlanetSub": "",
+              "stageLevel": "4",
+              "subStageLevel": "0"
+            },
+            {
+              "SysStage": "Disbusement",
+              "SystemSubStage": "Document Verfication",
+              "PlanetStage": "Disbusement Formalities",
+              "PlanetSub": "Documents are getting verfied",
+              "stageLevel": "4",
+              "subStageLevel": "4"
+            },
+            {
+              "SysStage": "Disbusement",
+              "SystemSubStage": "Loan-Onboarding",
+              "PlanetStage": "Loan Disbursed",
+              "PlanetSub": "",
+              "stageLevel": "5",
+              "subStageLevel": "0"
+            },
+            {
+              "SysStage": "Disbusement",
+              "SystemSubStage": "Online Welcome Kit",
+              "PlanetStage": "Loan Disbursed",
+              "PlanetSub": "Online Welcome Kit",
+              "stageLevel": "5",
+              "subStageLevel": "1"
+            },
+            {
+              "SysStage": "Disbusement",
+              "SystemSubStage": "EXPIRED",
+              "PlanetStage": "Disbursement Formalities",
+              "PlanetSub": "",
+              "stageLevel": "5",
+              "subStageLevel": "0"
+            },
+            {
+              "SysStage": "Disbusement",
+              "SystemSubStage": "REJECTED",
+              "PlanetStage": "Disbursement Formalities",
+              "PlanetSub": "",
+              "stageLevel": "5",
+              "subStageLevel": "0"
+            }
+          ]
+        }
+      ]
+    }
+  }

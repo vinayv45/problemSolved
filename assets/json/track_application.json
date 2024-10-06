@@ -1,0 +1,89 @@
+{
+  "data": {
+    "subStage": "Offer details",
+    "stage": "Qualification",
+    "product": "Two Wheeler"
+  },
+  "stepper-data": [
+    {
+      "SysStage": "Qualification",
+      "SystemSubStage": "KYC docs upload",
+      "PlanetStage": "Credit / KYC Authentication",
+      "PlanetSub": "",
+      "stageLevel": 2,
+      "subStageLevel": 1
+    },
+    {
+      "SysStage": "Qualification",
+      "SystemSubStage": "Income Details",
+      "PlanetStage": "Credit / KYC Authentication",
+      "PlanetSub": "",
+      "stageLevel": 2,
+      "subStageLevel": 2
+    },
+    {
+      "SysStage": "Qualification",
+      "SystemSubStage": "Asset Details",
+      "PlanetStage": "Credit / KYC Authentication",
+      "PlanetSub": "Please select your asset",
+      "stageLevel": 2,
+      "subStageLevel": 3
+    },
+    {
+      "SysStage": "Qualification",
+      "SystemSubStage": "Offer details",
+      "PlanetStage": "Credit / KYC Authentication",
+      "PlanetSub": "Select your offer tenure and ammount",
+      "stageLevel": 2,
+      "subStageLevel": 4
+    },
+    {
+      "SysStage": "Sanction",
+      "SystemSubStage": "Loan Sanction With Eligibility",
+      "PlanetStage": "Loan Sanction Approval",
+      "PlanetSub": "Loan Sanctioned",
+      "stageLevel": 3,
+      "subStageLevel": 1
+    },
+    {
+      "SysStage": "Disbusement",
+      "SystemSubStage": "Disbusement Form",
+      "PlanetStage": "Disbusement Formalities",
+      "PlanetSub": "Awaiting Bank & Other Details",
+      "stageLevel": 4,
+      "subStageLevel": 1
+    },
+    {
+      "SysStage": "Disbusement",
+      "SystemSubStage": "Mandate Setup",
+      "PlanetStage": "Disbusement Formalities",
+      "PlanetSub": "Mandate Setup",
+      "stageLevel": 4,
+      "subStageLevel": 2
+    },
+    {
+      "SysStage": "Disbusement",
+      "SystemSubStage": "E-DOC",
+      "PlanetStage": "Disbusement Formalities",
+      "PlanetSub": "Loan Agrement Excecution",
+      "stageLevel": 4,
+      "subStageLevel": 3
+    },
+    {
+      "SysStage": "Disbusement",
+      "SystemSubStage": "Document Verfication",
+      "PlanetStage": "Disbusement Formalities",
+      "PlanetSub": "Documents are getting verfied",
+      "stageLevel": 4,
+      "subStageLevel": 4
+    },
+    {
+      "SysStage": "Disbusement",
+      "SystemSubStage": "Online Welcome Kit",
+      "PlanetStage": "Loan Disbursed",
+      "PlanetSub": "Online Welcome Kit",
+      "stageLevel": 5,
+      "subStageLevel": 1
+    }
+  ]
+}
