@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,132 +19,79 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatelessWidget {
-  final String jsonString = '''{
-        "data": {
-           "subStage": "Loan Sanction With Eligibility",
-           "stage": "Sanction",
-           "product": "Two Wheeler"
-        },
-        "stepper-data": [
-          {
-            "SysStage": "Qualification",
-            "SystemSubStage": "KYC docs upload",
-            "PlanetStage": "Credit / KYC Authentication",
-            "PlanetSub": "",
-            "stageLevel": 2,
-            "subStageLevel": 1
-          },
-          {
-            "SysStage": "Qualification",
-            "SystemSubStage": "Income Details",
-            "PlanetStage": "Credit / KYC Authentication",
-            "PlanetSub": "",
-            "stageLevel": 2,
-            "subStageLevel": 2
-          },
-          {
-            "SysStage": "Qualification",
-            "SystemSubStage": "Asset Details",
-            "PlanetStage": "Credit / KYC Authentication",
-            "PlanetSub": "Please select your asset",
-            "stageLevel": 2,
-            "subStageLevel": 3
-          },
-          {
-            "SysStage": "Qualification",
-            "SystemSubStage": "Offer details",
-            "PlanetStage": "Credit / KYC Authentication",
-            "PlanetSub": "Select your offer tenure and amount",
-            "stageLevel": 2,
-            "subStageLevel": 4
-          },
-          {
-            "SysStage": "Sanction",
-            "SystemSubStage": "Loan Sanction With Eligibility",
-            "PlanetStage": "Loan Sanction Approval",
-            "PlanetSub": "Loan Sanctioned",
-            "stageLevel": 3,
-            "subStageLevel": 1
-          },
-          {
-            "SysStage": "Disbusement",
-            "SystemSubStage": "Disbusement Form",
-            "PlanetStage": "Disbusement Formalities",
-            "PlanetSub": "Awaiting Bank & Other Details",
-            "stageLevel": 4,
-            "subStageLevel": 1
-          },
-          {
-            "SysStage": "Disbusement",
-            "SystemSubStage": "Mandate Setup",
-            "PlanetStage": "Disbusement Formalities",
-            "PlanetSub": "Mandate Setup",
-            "stageLevel": 4,
-            "subStageLevel": 2
-          },
-          {
-            "SysStage": "Disbusement",
-            "SystemSubStage": "E-DOC",
-            "PlanetStage": "Disbusement Formalities",
-            "PlanetSub": "Loan Agreement Execution",
-            "stageLevel": 4,
-            "subStageLevel": 3
-          },
-          {
-            "SysStage": "Disbusement",
-            "SystemSubStage": "Document Verification",
-            "PlanetStage": "Disbusement Formalities",
-            "PlanetSub": "Documents are getting verified",
-            "stageLevel": 4,
-            "subStageLevel": 4
-          },
-          {
-            "SysStage": "Disbusement",
-            "SystemSubStage": "Online Welcome Kit",
-            "PlanetStage": "Loan Disbursed",
-            "PlanetSub": "Online Welcome Kit",
-            "stageLevel": 5,
-            "subStageLevel": 1
-          }
-        ]
-      }''';
+class HomeScreen extends StatefulWidget {
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String jsonString = "";
+  Map<String, List<StepperItem>> groupedSteps = {};
+  StepData currentStatus = StepData(
+    subStage: '',
+    stage: '',
+    stageLevel: 0,
+  );
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  loadData() async {
+    var data2 =
+        await rootBundle.loadString("assets/json/track_application.json");
+    jsonString = data2;
     final data = jsonDecode(jsonString);
 
-    // Extracting stage level based on the current stage and sub-stage
-    int currentStageLevel = 0;
+    final currentStage = data['data']['applicationDetails'][0]['stage'];
+    final currentSubStage = data['data']['applicationDetails'][0]['subStage'];
 
-    for (var step in data["stepper-data"]) {
-      if (step["SysStage"] == data["data"]["stage"] &&
-          step["SystemSubStage"] == data["data"]["subStage"]) {
-        currentStageLevel = step["stageLevel"];
+    // Debug output
+    print("Current Stage: $currentStage");
+    print("Current SubStage: $currentSubStage");
+
+    // Extracting stage level
+    int currentStageLevel = 0;
+    for (var step in data["data"]["applicationContent"][0]["subStages"]) {
+      if (step["SysStage"] == currentStage &&
+          step["SystemSubStage"] == currentSubStage) {
+        currentStageLevel = int.parse(step["stageLevel"].toString());
         break; // Exit once we find the matching step
       }
     }
 
-    final currentStatus = StepData(
-      subStage: data["data"]["subStage"],
-      stage: data["data"]["stage"],
-      stageLevel: currentStageLevel,
-    );
+    setState(() {
+      currentStatus = StepData(
+        subStage: currentSubStage,
+        stage: currentStage,
+        stageLevel: currentStageLevel,
+      );
+    });
 
-    // Group step data by PlanetStage
-    final groupedSteps = groupByPlanetStage(data["stepper-data"]);
+    // Debug output for currentStatus
+    print(
+        "Current Status: ${currentStatus.subStage}, ${currentStatus.stage}, ${currentStatus.stageLevel}");
 
+    // Group step data
+    groupedSteps =
+        groupByPlanetStage(data["data"]["applicationContent"][0]["subStages"]);
+    setState(() {});
+
+    // Debug output for grouped steps
+    print("Grouped Steps: $groupedSteps");
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Custom Stepper'),
-      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: TimelineStepper(
-          groupedSteps: groupedSteps,
-          currentStatus: currentStatus,
-        ),
-      ),
+          padding: const EdgeInsets.all(16.0),
+          child: TimelineStepper(
+            groupedSteps: groupedSteps,
+            currentStatus: currentStatus,
+          )),
     );
   }
 
@@ -197,8 +145,8 @@ class StepperItem {
       systemSubStage: json["SystemSubStage"],
       planetStage: json["PlanetStage"],
       planetSub: json["PlanetSub"],
-      stageLevel: json["stageLevel"],
-      subStageLevel: json["subStageLevel"],
+      stageLevel: int.parse(json["stageLevel"].toString()),
+      subStageLevel: int.parse(json["subStageLevel"].toString()),
     );
   }
 }
@@ -215,232 +163,187 @@ class TimelineStepper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: groupedSteps.entries.map((entry) {
-        final String planetStage = entry.key;
-        final List<StepperItem> subSteps = entry.value;
+    return ListView.builder(
+      itemCount: groupedSteps.length,
+      itemBuilder: (context, index) {
+        final String planetStage = groupedSteps.keys.elementAt(index);
+        final List<StepperItem> subSteps = groupedSteps[planetStage]!;
 
-        // Initialize completion status for the planet stage
-        bool isComplete = true;
+        // Determine if the planet stage is complete
+        bool isStageComplete = subSteps
+            .every((step) => step.stageLevel < currentStatus.stageLevel);
 
-        // Check if each stage and its sub-stage is complete
-        for (var step in subSteps) {
-          if (step.stageLevel < currentStatus.stageLevel) {
-            isComplete = true; // Mark as completed if earlier stage
-          } else if (step.stageLevel == currentStatus.stageLevel) {
-            if (step.systemSubStage == currentStatus.subStage) {
-              isComplete =
-                  true; // Mark as complete if current stage and sub-stage match
-            } else {
-              isComplete = false; // Otherwise mark as not complete
-            }
-          } else {
-            isComplete = false; // Future stages are not complete
-          }
-        }
+        // Only show ongoing sub-stages for the current stage
+        final List<StepperItem> ongoingSubStages = subSteps.where((step) {
+          return step.stageLevel ==
+              currentStatus.stageLevel; // Only include ongoing stages
+        }).toList();
 
+        bool arePreviousStagesComplete =
+            groupedSteps.keys.take(index).every((key) {
+          final previousSteps = groupedSteps[key]!;
+          return previousSteps.every((step) {
+            return step.stageLevel < currentStatus.stageLevel;
+          });
+        });
+
+        print(
+            "Are Previous Stages Complete for index $index: $arePreviousStagesComplete");
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Planet stage label
             Padding(
-              padding: const EdgeInsets.only(left: 20.0, top: 0, bottom: 0),
+              padding: const EdgeInsets.only(
+                left: 20.0,
+                bottom: 0,
+              ),
               child: Row(
                 children: [
-                  // Add padding between the checkbox and the line
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        right: 8.0), // Space between checkbox and line
-                    child: Checkbox(
-                      fillColor: isComplete
-                          ? WidgetStateProperty.all(Colors.blue)
-                          : WidgetStateProperty.all(Colors.white),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      value: isComplete,
-                      onChanged: null, // Disable interaction
+                  Container(
+                    margin: EdgeInsets.zero,
+                    width: 16,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isStageComplete
+                          ? Colors.blue
+                          : Colors.transparent, // Filled if complete
+                      border: Border.all(
+                          color: isStageComplete
+                              ? Colors.transparent
+                              : Colors.grey), // Outline if not complete
                     ),
+                    child: isStageComplete
+                        ? const Icon(
+                            Icons.check,
+                            color: Colors.white, // Check icon color
+                            size: 12, // Adjust size as needed
+                          )
+                        : null, // No icon for incomplete stages
                   ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 11.0, bottom: 0, top: 0),
-                    child: Text(
-                      planetStage,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 16),
+                  const SizedBox(width: 10),
+                  Text(
+                    planetStage,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
                     ),
                   ),
                 ],
               ),
             ),
-            // Adjust the padding to space out the checkbox from the timeline
-            //  const SizedBox(height: 16), // Space above the timeline
-            Padding(
-              padding: const EdgeInsets.only(left: 30.0, top: 0, bottom: 0),
-              child: Column(
-                children: subSteps.map((step) {
-                  bool isActive =
-                      step.systemSubStage == currentStatus.subStage &&
-                          step.sysStage == currentStatus.stage;
-                  bool isLastItem = step == subSteps.last;
-                  bool isCompletedStage =
-                      step.stageLevel < currentStatus.stageLevel;
 
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Stack(
-                        alignment: Alignment.centerLeft,
-                        children: [
-                          CustomPaint(
-                            size: Size(isActive ? 16 : 16, 40),
-                            painter: TimelinePainter(
-                              isActive: isActive,
-                              isComplete: isCompletedStage ||
-                                  (step.stageLevel ==
-                                          currentStatus.stageLevel &&
-                                      step.subStageLevel <=
-                                          currentStatus
-                                              .stageLevel), // All previous lines blue
-                              isLastItem: isLastItem,
-                              isFirstItem: step == subSteps.first,
-                            ),
-                          ),
-                          isActive
-                              ? Positioned(
-                                  top: 14,
-                                  child: Image.asset(
-                                    "assets/bicycle.png",
-                                    height: 40,
-                                    width: 16,
-                                  ),
-                                )
-                              : Container()
-                        ],
-                      ),
-                      const SizedBox(width: 4),
-                      if (step.planetSub.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(left: 30, top: 10),
-                          child: Text(
-                            step.planetSub,
-                            style: TextStyle(
-                              color: isActive ? Colors.black : Colors.grey,
-                            ),
-                          ),
-                        ),
-                    ],
-                  );
-                }).toList(),
+            if (isStageComplete) ...[
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 26.0,
+                  bottom: 0,
+                  top: 0,
+                ),
+                child: Column(
+                  children: List.generate(
+                    4,
+                    (index) {
+                      return Container(
+                        height: 10,
+                        width: 2,
+                        color: Colors.blue,
+                        margin: const EdgeInsets.only(
+                            right: 4), // Space between bars
+                      );
+                    },
+                  ),
+                ),
               ),
+            ],
+
+            ...ongoingSubStages.map(
+              (step) {
+                print("step ${step.systemSubStage}");
+                bool isActive = step.systemSubStage == currentStatus.subStage &&
+                    step.sysStage == currentStatus.stage;
+
+                return step.planetSub.isEmpty
+                    ? const SizedBox.shrink()
+                    : Padding(
+                        padding: const EdgeInsets.only(
+                          left: 24,
+                          top: 0,
+                        ),
+                        child: Row(
+                          children: [
+                            // Check if previous stages are complete to show grey or blue dots
+                            arePreviousStagesComplete
+                                ? Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      Column(
+                                        children: List.generate(
+                                          4,
+                                          (index) {
+                                            return Container(
+                                              width: 2,
+                                              height: 10, // Height of each dot
+                                              color: Colors.blue,
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                      Container(
+                                        width: 8,
+                                        height: 8,
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.blue,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      Column(
+                                        children: List.generate(
+                                          4,
+                                          (index) {
+                                            return Container(
+                                              width: 2,
+                                              height: 10, // Height of each dot
+                                              color: Colors.grey,
+                                              margin: const EdgeInsets.only(
+                                                bottom: 4,
+                                              ), // Space between dots
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                      Container(
+                                        width: 8,
+                                        height: 8,
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                            const SizedBox(width: 8),
+                            Text(
+                              step.systemSubStage,
+                              style: TextStyle(
+                                color: isActive ? Colors.black : Colors.grey,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+              },
             ),
           ],
         );
-      }).toList(),
+      },
     );
   }
-}
-
-class TimelinePainter extends CustomPainter {
-  final bool isComplete;
-  final bool isActive;
-  final bool isLastItem;
-  final bool isFirstItem;
-
-  TimelinePainter({
-    required this.isComplete,
-    required this.isActive,
-    required this.isLastItem,
-    required this.isFirstItem,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    Paint linePaint = Paint()
-      ..strokeWidth = 2.0
-      ..color = isComplete || isActive ? Colors.blue : Colors.grey
-      ..style = PaintingStyle.stroke;
-
-    double startY = 0; // Always start from the top of the widget
-    double endY = size.height;
-
-    if (!isComplete && !isActive) {
-      // Draw dotted line for incomplete steps
-      _drawDottedLine(canvas, size, linePaint, startY, endY);
-    } else {
-      // Draw solid line for completed steps
-      canvas.drawLine(
-        Offset(size.width / 2, startY),
-        Offset(size.width / 2, endY),
-        linePaint,
-      );
-    }
-
-    // Draw the dot for completed and active sub-stages with white fill and grey outline
-    if (isComplete || isActive) {
-      _drawSolidCircle(canvas, size);
-    } else {
-      _drawOutlinedCircle(canvas, size);
-    }
-  }
-
-  void _drawDottedLine(
-      Canvas canvas, Size size, Paint paint, double startY, double endY) {
-    const double dashHeight = 4; // Height of a dash
-    const double dashSpacing = 4; // Space between dashes
-
-    double y = startY;
-    while (y < endY) {
-      // Draw individual dash
-      canvas.drawLine(
-        Offset(size.width / 2, y),
-        Offset(size.width / 2, y + dashHeight),
-        paint,
-      );
-      y += dashHeight + dashSpacing; // Move to the next dash position
-    }
-  }
-
-  void _drawSolidCircle(Canvas canvas, Size size) {
-    Paint solidCirclePaint = Paint()
-      ..color = Colors.blue // Blue filled for completed or active steps
-      ..style = PaintingStyle.fill;
-
-    double iconSize = 3.0; // Set the size for the dot
-    canvas.drawCircle(
-      Offset(size.width / 2, size.height / 2),
-      iconSize,
-      solidCirclePaint,
-    );
-  }
-
-  void _drawOutlinedCircle(Canvas canvas, Size size) {
-    Paint fillPaint = Paint()
-      ..color = Colors.white // White fill color
-      ..style = PaintingStyle.fill;
-
-    Paint outlinePaint = Paint()
-      ..color = Colors.grey // Grey outline for incomplete steps
-      ..strokeWidth = 0.5
-      ..style = PaintingStyle.stroke;
-
-    double iconSize = 3.0; // Set the size for the dot
-
-    // Draw white-filled circle first
-    canvas.drawCircle(
-      Offset(size.width / 2, size.height / 2),
-      iconSize,
-      fillPaint,
-    );
-
-    // Then draw the grey outline
-    canvas.drawCircle(
-      Offset(size.width / 2, size.height / 2),
-      iconSize,
-      outlinePaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
