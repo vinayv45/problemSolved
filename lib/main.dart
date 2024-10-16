@@ -192,12 +192,19 @@ class TimelineStepper extends StatelessWidget {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: isStageComplete
-                              ? Colors.blue
-                              : Colors.transparent,
+                              ? const Color.fromARGB(255, 129, 137, 144)
+                              : (planetStage ==
+                                      currentStatus
+                                          .stage) // Check if it's the current processing stage
+                                  ? Colors.orange // Processing stage color
+                                  : Colors.transparent,
                           border: Border.all(
                             color: isStageComplete
                                 ? Colors.transparent
-                                : Colors.grey,
+                                : (planetStage == currentStatus.stage)
+                                    ? Colors
+                                        .orange // Border for processing stage
+                                    : Colors.grey, // Grey for other stages
                           ),
                         ),
                         child: isStageComplete
@@ -206,18 +213,34 @@ class TimelineStepper extends StatelessWidget {
                                 color: Colors.white,
                                 size: 12,
                               )
-                            : null,
+                            : (planetStage == currentStatus.stage)
+                                ? SizedBox(
+                                    width: 12,
+                                    height:
+                                        12, // Adjust to fit inside the 16x16 box
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.0,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.white),
+                                    ),
+                                  ) // Show spinner for the processing stage
+                                : null,
                       ),
                       const SizedBox(width: 10),
                       Text(
                         planetStage,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
+                          color: (planetStage == currentStatus.stage)
+                              ? Colors
+                                  .orange // Highlight the processing stage text
+                              : Colors
+                                  .black, // Default text color for other stages
                         ),
                       ),
                     ],
-                  ),
+                  )
                 ],
               ),
             ),
