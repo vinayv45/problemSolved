@@ -47,7 +47,6 @@ class CustomStepper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Show all sub-stages if the stage is current, otherwise display only the stage name.
     final List<dynamic> filteredSubStages =
         (stage['status'] == 'Current' && stage['status'] != 'Failed')
             ? stage['sub_stages']
@@ -65,13 +64,13 @@ class CustomStepper extends StatelessWidget {
                 size: Size(
                   20,
                   60 + (filteredSubStages.length * 22),
-                ), // Adjust the height based on sub-stages
+                ),
                 painter: StepperPainter(
                   isComplete: stage['status'] == 'Success',
                   isCurrent: stage['status'] == 'Current',
                   isLast: isLast,
                   subStages: filteredSubStages,
-                  status: stage['status'], // Pass the status here
+                  status: stage['status'],
                 ),
               ),
             ),
@@ -80,7 +79,6 @@ class CustomStepper extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Always display the main stage name.
                   stage['status'] == 'Failed'
                       ? Text(
                           "Application Rejected",
@@ -97,15 +95,12 @@ class CustomStepper extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                  // Display the sub-stages if they exist and the current stage is active and not failed.
-                  if (stage['status'] == 'Failed' &&
-                      filteredSubStages.isNotEmpty)
+                  if (filteredSubStages.isNotEmpty)
                     ...filteredSubStages.map<Widget>((subStage) {
                       return Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Row(
                           children: [
-                            // Sub-stage description
                             Expanded(
                               child: Text(subStage['PlanetSub']),
                             ),
@@ -164,6 +159,13 @@ class StepperPainter extends CustomPainter {
       _drawCloseIcon(canvas, circleCenter, iconSize, Colors.white);
     }
 
+    // Draw the check icon if the status is "Success"
+    if (status == "Success") {
+      final double iconSize = 10.0;
+      _drawCheckIcon(
+          canvas, circleCenter, iconSize, Colors.white); // Draw check icon
+    }
+
     // Draw the vertical line connecting stages
     if (!isLast) {
       if (isComplete || isCurrent) {
@@ -182,40 +184,41 @@ class StepperPainter extends CustomPainter {
       final bool isSubComplete = subStage['status'] == 'Success';
       final bool isSubCurrent = subStage['status'] == 'Current';
       final bool isSubPending = subStage['status'] == 'Pending';
+      final bool isSubFailed = subStage['status'] == 'Failed';
 
-      // Draw sub-stage line only for current stages
+      // Draw sub-stage line only for current or success stages
       if (i > 0) {
-        if (isSubCurrent || isSubComplete) {
+        if (isSubComplete || isSubCurrent) {
+          paint.color = Colors.blue;
           _drawLine(canvas, Offset(size.width / 2, startY - 20),
-              Offset(size.width / 2, startY), paint); // Solid blue line
+              Offset(size.width / 2, startY), paint);
         } else if (isSubPending) {
+          paint.color = Colors.grey;
           _drawDottedLine(canvas, Offset(size.width / 2, startY - 20),
-              Offset(size.width / 2, startY), paint); // Dotted grey line
+              Offset(size.width / 2, startY), paint);
+        } else if (isSubFailed) {
+          paint.color = Colors.red;
+          _drawDottedLine(canvas, Offset(size.width / 2, startY - 20),
+              Offset(size.width / 2, startY), paint); // Red dotted line
         }
       }
 
       // Draw sub-stage dot
-      final double dotRadius = 5.0; // Radius for the filled dot
+      final double dotRadius = 5.0;
 
       if (isSubCurrent) {
-        // Blue fill for current sub-stage
         paint.style = PaintingStyle.fill;
-        paint.color = Colors.blue; // Set fill color to blue
-        canvas.drawCircle(
-            Offset(size.width / 2, startY), dotRadius, paint); // Draw blue dot
-      } else {
-        // White fill for other sub-stages with grey outline
+        paint.color = Colors.blue;
+        canvas.drawCircle(Offset(size.width / 2, startY), dotRadius, paint);
+      } else if (isSubPending) {
         paint.style = PaintingStyle.fill;
-        paint.color = Colors.white; // Set fill color to white
-        canvas.drawCircle(
-            Offset(size.width / 2, startY), dotRadius, paint); // Draw white dot
+        paint.color = Colors.white;
+        canvas.drawCircle(Offset(size.width / 2, startY), dotRadius, paint);
 
-        // Draw grey outline for the dot
         paint.style = PaintingStyle.stroke;
-        paint.color = Colors.grey; // Set outline color to grey
-        paint.strokeWidth = 1.0; // Outline thickness
-        canvas.drawCircle(
-            Offset(size.width / 2, startY), dotRadius, paint); // Draw outline
+        paint.color = Colors.grey;
+        paint.strokeWidth = 1.0;
+        canvas.drawCircle(Offset(size.width / 2, startY), dotRadius, paint);
       }
 
       // Move to the next sub-stage position
@@ -223,7 +226,6 @@ class StepperPainter extends CustomPainter {
     }
   }
 
-  // Draw a close (X) icon
   void _drawCloseIcon(Canvas canvas, Offset center, double size, Color color) {
     final Paint paint = Paint()
       ..color = color
@@ -242,12 +244,28 @@ class StepperPainter extends CustomPainter {
     );
   }
 
-  // Helper function to draw a solid line
+  void _drawCheckIcon(Canvas canvas, Offset center, double size, Color color) {
+    final Paint paint = Paint()
+      ..color = color
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawLine(
+      Offset(center.dx - size / 3, center.dy),
+      Offset(center.dx - size / 6, center.dy + size / 3),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(center.dx - size / 6, center.dy + size / 3),
+      Offset(center.dx + size / 3, center.dy - size / 3),
+      paint,
+    );
+  }
+
   void _drawLine(Canvas canvas, Offset start, Offset end, Paint paint) {
     canvas.drawLine(start, end, paint);
   }
 
-  // Helper function to draw a dotted line
   void _drawDottedLine(Canvas canvas, Offset start, Offset end, Paint paint) {
     const double dashWidth = 5.0;
     const double dashSpace = 3.0;
@@ -301,7 +319,7 @@ final List<Map<String, dynamic>> stages = [
         "PlanetSub": "Awaiting Income Document for offer enhancement",
         "stageLevel": "2",
         "subStageLevel": "2",
-        "status": "Pending"
+        "status": "Current"
       },
       {
         "SysStage": "Qualification",
@@ -310,7 +328,7 @@ final List<Map<String, dynamic>> stages = [
         "PlanetSub": "Please select your asset",
         "stageLevel": "2",
         "subStageLevel": "3",
-        "status": "Pending"
+        "status": "Current"
       },
       {
         "SysStage": "Qualification",
@@ -326,7 +344,7 @@ final List<Map<String, dynamic>> stages = [
   {
     "id": "3",
     "name": "Loan Sanction Approval",
-    "status": "Pending",
+    "status": "Failed",
     "sub_stages": [
       {
         "SysStage": "Sanction",
@@ -335,30 +353,8 @@ final List<Map<String, dynamic>> stages = [
         "PlanetSub": "Loan Sanctioned",
         "stageLevel": "3",
         "subStageLevel": "1",
-        "status": "Pending"
+        "status": "Failed"
       }
     ]
-  },
-  {
-    "id": "4",
-    "name": "Disbursement Formalities",
-    "status": "Pending",
-    "sub_stages": [
-      {
-        "SysStage": "Formalities",
-        "SystemSubStage": "Account Setup",
-        "PlanetStage": "Disbursement Formalities",
-        "PlanetSub": "Upload your account details",
-        "stageLevel": "4",
-        "subStageLevel": "1",
-        "status": "Pending"
-      }
-    ]
-  },
-  {
-    "id": "5",
-    "name": "Loan Disbursement",
-    "status": "Pending",
-    "sub_stages": []
   },
 ];
